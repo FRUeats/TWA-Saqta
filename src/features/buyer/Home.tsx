@@ -164,6 +164,11 @@ const Home = () => {
                     </div>
                 )}
 
+                {/* DEBUG INFO - REMOVE LATER */}
+                <div className="text-xs text-gray-400 mb-2 truncate">
+                    API: {import.meta.env.VITE_API_URL || 'Using /api proxy'}
+                </div>
+
                 {loading ? (
                     // Loading State
                     <div className="grid grid-cols-1 gap-4">
