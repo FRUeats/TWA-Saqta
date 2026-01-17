@@ -33,6 +33,8 @@ const Home = () => {
     const [loading, setLoading] = useState(true);
     const [filter, setFilter] = useState<'all' | 'nearby' | 'lowPrice'>('all');
 
+    const [error, setError] = useState<string | null>(null);
+
     // Fetch offers from API
     useEffect(() => {
         fetchOffers();
@@ -40,11 +42,13 @@ const Home = () => {
 
     const fetchOffers = async () => {
         setLoading(true);
+        setError(null);
         try {
             const data = await offersApi.getAll();
             setOffers(data);
-        } catch (error) {
+        } catch (error: any) {
             console.error('Failed to fetch offers:', error);
+            setError(error.message || 'Failed to load offers');
         } finally {
             setLoading(false);
         }
@@ -147,6 +151,19 @@ const Home = () => {
 
             {/* Content */}
             <div className="px-4 py-6">
+                {error && (
+                    <div className="bg-red-500/10 border border-red-500/50 text-red-500 p-4 rounded-xl mb-4">
+                        <p className="font-semibold">Error loading offers:</p>
+                        <p className="text-sm">{error}</p>
+                        <button
+                            onClick={fetchOffers}
+                            className="mt-2 text-sm underline"
+                        >
+                            Try Again
+                        </button>
+                    </div>
+                )}
+
                 {loading ? (
                     // Loading State
                     <div className="grid grid-cols-1 gap-4">
