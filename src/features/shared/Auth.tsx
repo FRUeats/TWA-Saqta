@@ -12,7 +12,7 @@ import { useAuthStore } from '../../store/authStore';
 const Auth = () => {
     const navigate = useNavigate();
     const { user, initData, tg } = useTelegram();
-    const { login, checkAuth, isLoading } = useAuthStore();
+    const { login, checkAuth } = useAuthStore();
     const [authError, setAuthError] = useState<string | null>(null);
     const [status, setStatus] = useState<string>('Initializing...');
 

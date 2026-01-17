@@ -6,7 +6,6 @@ import { useAuthStore } from '../../store/authStore';
 const Profile = () => {
     const navigate = useNavigate();
     const { user, hapticFeedback } = useTelegram();
-    const { logout } = useAuthStore();
 
     // Get initials for avatar
     const getInitials = () => {
