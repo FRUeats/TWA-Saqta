@@ -27,12 +27,22 @@ async function apiClient(endpoint: string, options: ApiOptions = {}) {
 
     const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
 
-    if (!response.ok) {
-        const error = await response.json().catch(() => ({ error: 'Request failed' }));
-        throw new Error(error.error || 'Request failed');
+    let data;
+    const contentType = response.headers.get("content-type");
+    if (contentType && contentType.indexOf("application/json") !== -1) {
+        data = await response.json();
+    } else {
+        // If not JSON (e.g. HTML error page from Vercel/Render), read as text
+        const text = await response.text();
+        console.warn('Received non-JSON response:', text.substring(0, 100)); // Log part of it
+        data = { error: 'Invalid server response', details: text.substring(0, 100) };
     }
 
-    return response.json();
+    if (!response.ok) {
+        throw new Error(data.error || 'Request failed');
+    }
+
+    return data;
 }
 
 export default apiClient;
