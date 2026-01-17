@@ -1,0 +1,151 @@
+// Prisma Schema for Saqta TWA
+// Database: PostgreSQL
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// USER MODEL
+// ============================================
+model User {
+  id        String  @id // Telegram User ID (stored as string)
+  firstName String
+  lastName  String?
+  username  String? @unique
+  role      Role    @default(BUYER)
+
+  // Vendor-specific fields
+  companyName String? // Company name (only for MERCHANT)
+  isVerified  Boolean   @default(false) // Whether vendor is verified by admin
+  verifiedAt  DateTime?
+
+  // Security fields
+  isBlocked   Boolean   @default(false)
+  lastLoginAt DateTime?
+
+  // Relations
+  stores Store[] // Only for merchants
+  orders Order[]
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}
+
+enum Role {
+  BUYER
+  MERCHANT
+  ADMIN
+}
+
+// ============================================
+// STORE MODEL
+// ============================================
+model Store {
+  id          String  @id @default(cuid())
+  name        String
+  address     String
+  latitude    Float
+  longitude   Float
+  image       String? // URL to store image
+  description String?
+  phone       String?
+
+  // Relations
+  merchantId String
+  merchant   User    @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+  offers     Offer[]
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([latitude, longitude]) // For geospatial queries
+  @@map("stores")
+}
+
+// ============================================
+// OFFER MODEL (Surprise Bag)
+// ============================================
+model Offer {
+  id String @id @default(cuid())
+
+  // Pricing
+  originalPrice   Float // Original price in KGS
+  discountedPrice Float // Discounted price in KGS
+
+  // Availability
+  quantity Int // Number of bags available
+
+  // Pickup Window
+  pickupStart DateTime // Start of pickup window
+  pickupEnd   DateTime // End of pickup window
+
+  // Additional Info
+  description String? // Optional description of what's included
+  image       String? // Optional image URL
+
+  // Relations
+  storeId String
+  store   Store   @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  orders  Order[]
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Soft delete
+  isActive Boolean @default(true)
+
+  @@index([storeId])
+  @@index([pickupStart, pickupEnd])
+  @@map("offers")
+}
+
+// ============================================
+// ORDER MODEL
+// ============================================
+model Order {
+  id String @id @default(cuid())
+
+  // Payment
+  status OrderStatus @default(PENDING)
+  qrCode String      @unique // QR code data for validation
+
+  // Additional
+  notes String? // Customer notes
+
+  // Relations
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  offerId String
+  offer   Offer  @relation(fields: [offerId], references: [id], onDelete: Cascade)
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Track completion
+  completedAt DateTime?
+
+  @@index([userId])
+  @@index([offerId])
+  @@index([status])
+  @@map("orders")
+}
+
+enum OrderStatus {
+  PENDING // Order created, awaiting payment
+  PAID // Payment confirmed
+  COMPLETED // Customer picked up order
+  CANCELLED // Order cancelled by user or merchant
+}
