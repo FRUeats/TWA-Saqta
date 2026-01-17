@@ -165,8 +165,13 @@ const Home = () => {
                 )}
 
                 {/* DEBUG INFO - REMOVE LATER */}
-                <div className="text-xs text-gray-400 mb-2 truncate">
-                    API: {import.meta.env.VITE_API_URL || 'Using /api proxy'}
+                <div className="text-xs text-gray-400 mb-2 overflow-hidden">
+                    <p>API: {import.meta.env.VITE_API_URL || 'Using /api proxy'}</p>
+                    <p>Offers count: {offers ? offers.length : 'null'}</p>
+                    <p>Is Array: {Array.isArray(offers) ? 'Yes' : 'No'}</p>
+                    <pre className="mt-2 p-2 bg-black text-green-400 rounded text-[10px] overflow-auto max-h-40">
+                        {JSON.stringify(offers?.[0] || {}, null, 2)}
+                    </pre>
                 </div>
 
                 {loading ? (
