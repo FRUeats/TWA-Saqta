@@ -20,6 +20,7 @@ const Checkout = () => {
     const [orderId, setOrderId] = useState<string | null>(null);
     const [qrCode, setQrCode] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
+    const [paymentMethod, setPaymentMethod] = useState<'mbank' | 'optima' | 'odengi'>('mbank');
 
     const totalPrice = getTotalPrice();
 
@@ -133,16 +134,43 @@ const Checkout = () => {
                 </div>
 
                 {/* Payment Method */}
-                <div className="bg-tg-secondary rounded-xl p-4 mb-6">
-                    <h3 className="font-semibold text-tg-text mb-3">Payment Method</h3>
-                    <div className="flex items-center gap-3 p-3 bg-tg-bg rounded-lg">
-                        <div className="w-10 h-10 bg-tg-button/20 rounded-full flex items-center justify-center">
-                            💵
-                        </div>
-                        <div>
-                            <div className="font-medium text-tg-text">Pay on Pickup</div>
-                            <div className="text-xs text-tg-hint">Cash or card at the store</div>
-                        </div>
+                <div className="mb-6">
+                    <h3 className="font-semibold text-tg-text mb-3">Choose Payment App</h3>
+                    <div className="grid grid-cols-2 gap-3">
+                        <button
+                            onClick={() => setPaymentMethod('mbank')}
+                            className={`p-4 rounded-xl border-2 flex flex-col items-center justify-center gap-2 transition-all ${paymentMethod === 'mbank'
+                                ? 'border-blue-500 bg-blue-500/10'
+                                : 'border-tg-hint/10 bg-tg-secondary'
+                                }`}
+                        >
+                            <span className="text-2xl">🏦</span>
+                            <span className="font-bold text-sm text-tg-text">MBank</span>
+                        </button>
+
+                        <button
+                            onClick={() => setPaymentMethod('optima')}
+                            className={`p-4 rounded-xl border-2 flex flex-col items-center justify-center gap-2 transition-all ${paymentMethod === 'optima'
+                                ? 'border-red-500 bg-red-500/10'
+                                : 'border-tg-hint/10 bg-tg-secondary'
+                                }`}
+                        >
+                            <span className="text-2xl">💳</span>
+                            <span className="font-bold text-sm text-tg-text">Optima24</span>
+                        </button>
+
+                        <button
+                            onClick={() => setPaymentMethod('odengi')}
+                            className={`p-4 rounded-xl border-2 flex flex-col items-center justify-center gap-2 transition-all ${paymentMethod === 'odengi'
+                                ? 'border-purple-500 bg-purple-500/10'
+                                : 'border-tg-hint/10 bg-tg-secondary'
+                                }`}
+                        >
+                            <span className="text-2xl">📱</span>
+                            <span className="font-bold text-sm text-tg-text">O!Dengi</span>
+                        </button>
+
+
                     </div>
                 </div>
 

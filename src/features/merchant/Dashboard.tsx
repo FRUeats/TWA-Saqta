@@ -8,7 +8,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTelegram } from '../../hooks/useTelegram';
 import { offersApi } from '../../api/offers';
-import Button from '../../components/Button';
+
 
 const MerchantDashboard = () => {
     const navigate = useNavigate();
@@ -74,117 +74,117 @@ const MerchantDashboard = () => {
     return (
         <div className="min-h-screen bg-tg-bg pb-6">
             {/* Header */}
-            <div className="bg-tg-secondary px-4 py-6">
-                <h1 className="text-2xl font-bold text-tg-text mb-1">
-                    🏪 Merchant Panel
-                </h1>
-                <p className="text-sm text-tg-hint">
-                    Welcome, {user?.first_name || 'Merchant'}
-                </p>
+            <div className="bg-tg-secondary px-4 py-6 shadow-sm mb-4">
+                <div className="flex justify-between items-center">
+                    <div>
+                        <h1 className="text-xl font-bold text-tg-text">
+                            Vendor Panel
+                        </h1>
+                        <p className="text-xs text-tg-hint uppercase tracking-wider font-semibold">
+                            {user?.first_name ? `${user.first_name}'s Store` : 'My Store'}
+                        </p>
+                    </div>
+                    <div className="w-10 h-10 bg-tg-button/10 rounded-full flex items-center justify-center text-tg-button font-bold">
+                        🏪
+                    </div>
+                </div>
             </div>
 
-            <div className="px-4 py-6 space-y-6">
-                {/* Quick Offer Button */}
-                <button
-                    onClick={handleQuickOffer}
-                    className="w-full bg-gradient-to-r from-green-500 to-green-600 text-white rounded-2xl p-6 shadow-lg active:scale-95 transition-transform"
-                >
-                    <div className="flex items-center justify-center gap-3">
-                        <span className="text-3xl">➕</span>
-                        <div className="text-left">
-                            <div className="text-xl font-bold">Quick Offer</div>
-                            <div className="text-sm opacity-90">Create in 2 clicks</div>
-                        </div>
-                    </div>
-                </button>
+            <div className="px-4 space-y-6">
 
                 {/* Stats */}
                 <div className="grid grid-cols-3 gap-3">
-                    <div className="bg-tg-secondary rounded-xl p-4 text-center">
+                    <div className="bg-tg-secondary rounded-xl p-4 text-center border border-tg-hint/5">
                         <div className="text-2xl font-bold text-tg-button">{stats.activeOffers}</div>
-                        <div className="text-xs text-tg-hint mt-1">Active Offers</div>
+                        <div className="text-[10px] uppercase text-tg-hint mt-1 font-bold">Active</div>
                     </div>
-                    <div className="bg-tg-secondary rounded-xl p-4 text-center">
+                    <div className="bg-tg-secondary rounded-xl p-4 text-center border border-tg-hint/5">
                         <div className="text-2xl font-bold text-orange-500">{stats.pendingOrders}</div>
-                        <div className="text-xs text-tg-hint mt-1">New Orders</div>
+                        <div className="text-[10px] uppercase text-tg-hint mt-1 font-bold">Orders</div>
                     </div>
-                    <div className="bg-tg-secondary rounded-xl p-4 text-center">
+                    <div className="bg-tg-secondary rounded-xl p-4 text-center border border-tg-hint/5">
                         <div className="text-2xl font-bold text-green-500">{stats.todayRevenue}</div>
-                        <div className="text-xs text-tg-hint mt-1">Today KGS</div>
+                        <div className="text-[10px] uppercase text-tg-hint mt-1 font-bold">Revenue</div>
                     </div>
                 </div>
 
+                {/* Main Action */}
+                <button
+                    onClick={handleQuickOffer}
+                    className="w-full bg-tg-button text-white rounded-xl p-4 shadow-lg active:scale-[0.99] transition-transform flex items-center justify-center gap-3"
+                >
+                    <span className="text-2xl font-bold">+</span>
+                    <span className="font-bold">Create New Offer</span>
+                </button>
+
                 {/* Active Offers */}
                 <div>
-                    <div className="flex items-center justify-between mb-3">
-                        <h2 className="text-lg font-semibold text-tg-text">📦 Active Offers</h2>
+                    <div className="flex items-center justify-between mb-3 px-1">
+                        <h2 className="text-sm font-bold text-tg-text uppercase tracking-wide">Active Offers</h2>
                         <button
                             onClick={() => navigate('/merchant/offers')}
-                            className="text-sm text-tg-button"
+                            className="text-xs text-tg-button font-medium"
                         >
-                            View All →
+                            View All
                         </button>
                     </div>
 
                     {offers.length > 0 ? (
                         <div className="space-y-3">
                             {offers.map((offer) => (
-                                <div key={offer.id} className="bg-tg-secondary rounded-xl p-4">
-                                    <div className="flex justify-between items-start mb-2">
+                                <div key={offer.id} className="bg-tg-secondary rounded-xl p-4 relative overflow-hidden">
+                                    <div className="flex justify-between items-start mb-3">
                                         <div className="flex-1">
-                                            <h3 className="font-semibold text-tg-text">{offer.store.name}</h3>
-                                            <p className="text-sm text-tg-hint">
-                                                {offer.originalPrice}₸ → {offer.discountedPrice}₸
+                                            <h3 className="font-semibold text-tg-text line-clamp-1">{offer.store.name}</h3>
+                                            <p className="text-xs text-tg-hint mt-1">
+                                                {offer.originalPrice} → <span className="text-green-500 font-bold">{offer.discountedPrice} KGS</span>
                                             </p>
                                         </div>
-                                        <div className="text-right">
-                                            <span className="text-lg font-bold text-tg-button">{offer.quantity}</span>
-                                            <span className="text-xs text-tg-hint ml-1">bags</span>
+                                        <div className="bg-tg-bg px-2 py-1 rounded text-xs font-mono font-bold">
+                                            x{offer.quantity}
                                         </div>
                                     </div>
 
                                     <div className="flex gap-2">
                                         <button
                                             onClick={() => navigate(`/merchant/edit/${offer.id}`)}
-                                            className="flex-1 bg-tg-button/10 text-tg-button py-2 rounded-lg text-sm font-medium"
+                                            className="flex-1 bg-tg-bg/50 text-tg-text py-2 rounded-lg text-xs font-medium hover:bg-tg-bg"
                                         >
                                             Edit
                                         </button>
                                         <button
                                             onClick={() => handleDeleteOffer(offer.id)}
-                                            className="flex-1 bg-red-500/10 text-red-500 py-2 rounded-lg text-sm font-medium"
+                                            className="w-10 bg-red-500/10 text-red-500 rounded-lg flex items-center justify-center text-sm"
                                         >
-                                            Delete
+                                            🗑
                                         </button>
                                     </div>
                                 </div>
                             ))}
                         </div>
                     ) : (
-                        <div className="text-center py-8 text-tg-hint">
-                            No active offers yet
+                        <div className="text-center py-8 text-tg-hint bg-tg-secondary rounded-xl border border-dashed border-tg-hint/20">
+                            No active offers
                         </div>
                     )}
                 </div>
 
-                {/* New Orders */}
-                <div>
-                    <div className="flex items-center justify-between mb-3">
-                        <h2 className="text-lg font-semibold text-tg-text">🔔 New Orders</h2>
-                        <button
-                            onClick={() => navigate('/merchant/orders')}
-                            className="text-sm text-tg-button"
-                        >
-                            View All →
-                        </button>
-                    </div>
-
-                    <div className="bg-tg-secondary rounded-xl p-4 text-center">
-                        <p className="text-tg-hint mb-3">Check new orders</p>
-                        <Button onClick={() => navigate('/merchant/orders')}>
-                            View Orders
-                        </Button>
-                    </div>
+                {/* Menu */}
+                <div className="bg-tg-secondary rounded-xl overflow-hidden">
+                    <button
+                        onClick={() => navigate('/merchant/orders')}
+                        className="w-full p-4 flex items-center justify-between hover:bg-tg-bg/50 border-b border-tg-hint/5"
+                    >
+                        <span className="font-medium text-tg-text">🔔 Incoming Orders</span>
+                        <span className="text-tg-hint">›</span>
+                    </button>
+                    <button
+                        onClick={() => navigate('/merchant/scan')}
+                        className="w-full p-4 flex items-center justify-between hover:bg-tg-bg/50"
+                    >
+                        <span className="font-medium text-tg-text">📷 Scan QR Code</span>
+                        <span className="text-tg-hint">›</span>
+                    </button>
                 </div>
             </div>
         </div>

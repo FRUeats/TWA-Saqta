@@ -5,21 +5,23 @@
  */
 
 import { ReactNode } from 'react';
-import RoleSwitcher from './RoleSwitcher';
+import BottomNav from './BottomNav';
 
 interface LayoutProps {
     children: ReactNode;
     role?: 'buyer' | 'merchant';
-    showRoleSwitcher?: boolean;
+    showRoleSwitcher?: boolean; // Kept for backward compatibility but unused
 }
 
-const Layout: React.FC<LayoutProps> = ({ children, showRoleSwitcher = true }) => {
+const Layout: React.FC<LayoutProps> = ({ children, role = 'buyer' }) => {
     return (
-        <div className="min-h-screen bg-tg-bg">
-            <main className="w-full max-w-2xl mx-auto">
+        <div className="min-h-screen bg-tg-bg relative">
+            <main className={`w-full max-w-2xl mx-auto ${role === 'buyer' ? 'pb-24' : 'pb-6'}`}>
                 {children}
             </main>
-            {showRoleSwitcher && <RoleSwitcher />}
+
+            {/* Show BottomNav only for buyers */}
+            {role === 'buyer' && <BottomNav />}
         </div>
     );
 };

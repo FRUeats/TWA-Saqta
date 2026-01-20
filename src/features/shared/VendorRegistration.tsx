@@ -1,132 +1,68 @@
 /**
- * VendorRegistration Component
+ * Vendor Registration (Contact)
  * 
- * Registration form for vendors (merchants)
+ * Tells users how to become a vendor
  */
 
-import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTelegram } from '../../hooks/useTelegram';
-import { useAuthStore } from '../../store/authStore';
+import Button from '../../components/Button';
 
 const VendorRegistration = () => {
     const navigate = useNavigate();
-    const { initData } = useTelegram();
-    const { vendorRegister, isLoading } = useAuthStore();
+    const { hapticFeedback } = useTelegram();
 
-    const [companyName, setCompanyName] = useState('');
-    const [error, setError] = useState<string | null>(null);
-
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-
-        if (!initData) {
-            setError('Telegram data not available');
-            return;
-        }
-
-        if (companyName.trim().length < 3) {
-            setError('Company name must be at least 3 characters');
-            return;
-        }
-
-        try {
-            setError(null);
-            await vendorRegister(initData, companyName.trim());
-
-            // Check if vendor needs verification
-            const user = useAuthStore.getState().user;
-            if (user && !user.isVerified) {
-                navigate('/vendor/pending');
-            } else {
-                navigate('/merchant');
-            }
-        } catch (err: any) {
-            setError(err.response?.data?.error || 'Registration failed');
-        }
+    const handleApply = () => {
+        hapticFeedback('medium');
+        // Open official support or website
+        window.open('https://t.me/SaqtaSupport', '_blank');
     };
 
     return (
-        <div className="min-h-screen bg-tg-bg flex items-center justify-center px-4">
-            <div className="max-w-md w-full space-y-6">
-                {/* Header */}
-                <div className="text-center">
-                    <div className="text-4xl mb-4">🏪</div>
-                    <h1 className="text-2xl font-bold text-tg-text mb-2">
-                        Vendor Registration
-                    </h1>
-                    <p className="text-tg-hint">
-                        Join Saqta as a merchant and start selling surplus food
-                    </p>
-                </div>
+        <div className="min-h-screen bg-tg-bg flex flex-col items-center justify-center p-6 text-center">
 
-                {/* Form */}
-                <form onSubmit={handleSubmit} className="space-y-4">
-                    <div>
-                        <label
-                            htmlFor="companyName"
-                            className="block text-sm font-medium text-tg-text mb-2"
-                        >
-                            Company/Store Name *
-                        </label>
-                        <input
-                            id="companyName"
-                            type="text"
-                            value={companyName}
-                            onChange={(e) => setCompanyName(e.target.value)}
-                            placeholder="e.g., Coffee House Bishkek"
-                            required
-                            minLength={3}
-                            className="w-full px-4 py-3 bg-tg-secondary-bg text-tg-text border border-tg-hint/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-tg-button"
-                        />
-                        <p className="text-xs text-tg-hint mt-1">
-                            This will be displayed to customers
-                        </p>
-                    </div>
-
-                    {/* Info Box */}
-                    <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4">
-                        <h3 className="text-sm font-semibold text-blue-400 mb-2">
-                            What happens next?
-                        </h3>
-                        <ul className="text-xs text-tg-hint space-y-1">
-                            <li>✓ Your account will be created as a vendor</li>
-                            <li>✓ Admin will verify your business</li>
-                            <li>✓ Once verified, you can start creating offers</li>
-                        </ul>
-                    </div>
-
-                    {/* Error Message */}
-                    {error && (
-                        <div className="bg-red-500/10 border border-red-500 rounded-lg p-3">
-                            <p className="text-sm text-red-500">{error}</p>
-                        </div>
-                    )}
-
-                    {/* Submit Button */}
-                    <button
-                        type="submit"
-                        disabled={isLoading || companyName.trim().length < 3}
-                        className="w-full bg-tg-button text-white py-3 rounded-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed hover:opacity-90 transition-opacity"
-                    >
-                        {isLoading ? 'Registering...' : 'Register as Vendor'}
-                    </button>
-
-                    {/* Back Button */}
-                    <button
-                        type="button"
-                        onClick={() => navigate('/')}
-                        className="w-full text-tg-hint py-2 text-sm hover:text-tg-text transition-colors"
-                    >
-                        Continue as buyer instead
-                    </button>
-                </form>
-
-                {/* Terms */}
-                <p className="text-xs text-tg-hint text-center">
-                    By registering, you agree to our Terms of Service and Privacy Policy
-                </p>
+            <div className="w-24 h-24 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-3xl flex items-center justify-center text-5xl shadow-xl mb-6 transform rotate-3">
+                🤝
             </div>
+
+            <h1 className="text-2xl font-bold text-tg-text mb-3">Partner with Saqta</h1>
+
+            <p className="text-tg-hint mb-8 leading-relaxed max-w-sm">
+                We are looking for bakeries, cafes, and restaurants who want to reduce food waste and earn extra revenue.
+            </p>
+
+            <div className="bg-tg-secondary p-5 rounded-xl w-full max-w-sm mb-6 text-left shadow-sm border border-tg-hint/10">
+                <h3 className="font-semibold text-tg-text mb-3">Why join us?</h3>
+                <ul className="space-y-3">
+                    <li className="flex gap-3 text-sm text-tg-text">
+                        <span className="text-green-500">✓</span>
+                        Earn from surplus food
+                    </li>
+                    <li className="flex gap-3 text-sm text-tg-text">
+                        <span className="text-green-500">✓</span>
+                        New customers visiting your store
+                    </li>
+                    <li className="flex gap-3 text-sm text-tg-text">
+                        <span className="text-green-500">✓</span>
+                        Help the planet
+                    </li>
+                </ul>
+            </div>
+
+            <p className="text-xs text-tg-hint mb-4">
+                Applications are moderated manually.
+            </p>
+
+            <Button size="lg" onClick={handleApply}>
+                Write to Manager
+            </Button>
+
+            <button
+                onClick={() => navigate('/')}
+                className="mt-6 text-tg-button text-sm font-medium"
+            >
+                Back to Home
+            </button>
         </div>
     );
 };
