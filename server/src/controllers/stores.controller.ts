@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { mockStores } from '../mock/mockData';
+import { mockStores } from '../mock/mockData.js';
 
 /**
  * Get all stores
