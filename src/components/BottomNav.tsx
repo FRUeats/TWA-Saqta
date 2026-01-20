@@ -10,8 +10,14 @@ const BottomNav = () => {
         {
             id: 'home',
             label: 'Home',
-            icon: '🏠', // Replace with SVG in production
+            icon: '🏠',
             path: '/',
+        },
+        {
+            id: 'map',
+            label: 'Map',
+            icon: '🗺️',
+            path: '/map',
         },
         {
             id: 'orders',

@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import authRouter from './routes/auth.routes.js';
 import offersRouter from './routes/offers.routes.js';
 import ordersRouter from './routes/orders.routes.js';
+import storesRouter from './routes/stores.routes.js';
 
 dotenv.config();
 
@@ -19,6 +20,7 @@ app.use(express.json());
 app.use('/api/auth', authRouter);
 app.use('/api/offers', offersRouter);
 app.use('/api/orders', ordersRouter);
+app.use('/api/stores', storesRouter);
 
 // Health check
 app.get('/health', (req, res) => {
