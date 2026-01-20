@@ -21,6 +21,7 @@ import MerchantDashboard from './features/merchant/Dashboard';
 import CreateOffer from './features/merchant/CreateOffer';
 import QRScanner from './features/merchant/QRScanner';
 import MerchantOrders from './features/merchant/MerchantOrders';
+import StoreSettings from './features/merchant/StoreSettings';
 
 // Shared Pages
 import Profile from './features/shared/Profile';
@@ -176,6 +177,17 @@ function App() {
                         <ProtectedRoute requiredRole="MERCHANT">
                             <Layout role="merchant">
                                 <MerchantOrders />
+                            </Layout>
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/merchant/settings"
+                    element={
+                        <ProtectedRoute requiredRole="MERCHANT">
+                            <Layout role="merchant">
+                                <StoreSettings />
                             </Layout>
                         </ProtectedRoute>
                     }

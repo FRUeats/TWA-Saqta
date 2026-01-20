@@ -180,9 +180,16 @@ const MerchantDashboard = () => {
                     </button>
                     <button
                         onClick={() => navigate('/merchant/scan')}
-                        className="w-full p-4 flex items-center justify-between hover:bg-tg-bg/50"
+                        className="w-full p-4 flex items-center justify-between hover:bg-tg-bg/50 border-b border-tg-hint/5"
                     >
                         <span className="font-medium text-tg-text">📷 Scan QR Code</span>
+                        <span className="text-tg-hint">›</span>
+                    </button>
+                    <button
+                        onClick={() => navigate('/merchant/settings')}
+                        className="w-full p-4 flex items-center justify-between hover:bg-tg-bg/50"
+                    >
+                        <span className="font-medium text-tg-text">⚙️ Store Settings</span>
                         <span className="text-tg-hint">›</span>
                     </button>
                 </div>

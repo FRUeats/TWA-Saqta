@@ -39,3 +39,48 @@ export const getStoreById = async (req: Request, res: Response) => {
         res.status(500).json({ error: 'Failed to fetch store' });
     }
 };
+
+/**
+ * Create or update store
+ */
+export const createOrUpdateStore = async (req: Request, res: Response) => {
+    try {
+        const { name, address, latitude, longitude, phone, description } = req.body;
+
+        // Validation
+        if (!name || !address || !latitude || !longitude) {
+            return res.status(400).json({ error: 'Missing required fields' });
+        }
+
+        // In production, you would:
+        // const merchantId = req.user.id; // from auth middleware
+        // const store = await prisma.store.upsert({
+        //     where: { merchantId },
+        //     create: { name, address, latitude, longitude, phone, description, merchantId },
+        //     update: { name, address, latitude, longitude, phone, description },
+        // });
+
+        // For now, just return success
+        const newStore = {
+            id: 'store-' + Date.now(),
+            name,
+            address,
+            latitude,
+            longitude,
+            phone,
+            description,
+            merchantId: 'dev-user-123',
+        };
+
+        console.log('Store created/updated:', newStore);
+
+        res.json({
+            success: true,
+            message: 'Store settings saved successfully',
+            store: newStore
+        });
+    } catch (error) {
+        console.error('Error saving store:', error);
+        res.status(500).json({ error: 'Failed to save store' });
+    }
+};

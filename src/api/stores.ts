@@ -19,4 +19,11 @@ export const storesApi = {
     getById: async (id: string): Promise<Store> => {
         return apiClient(`/api/stores/${id}`, { method: 'GET' });
     },
+
+    create: async (data: Omit<Store, 'id'>): Promise<{ success: boolean; message: string; store: Store }> => {
+        return apiClient('/api/stores', {
+            method: 'POST',
+            body: data,
+        });
+    },
 };
