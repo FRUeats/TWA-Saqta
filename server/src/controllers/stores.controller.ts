@@ -52,10 +52,10 @@ export const createOrUpdateStore = async (req: Request, res: Response) => {
             return res.status(400).json({ error: 'Missing required fields' });
         }
 
-        // In production, you would:
+        // In production with Prisma (ONE store per merchant):
         // const merchantId = req.user.id; // from auth middleware
         // const store = await prisma.store.upsert({
-        //     where: { merchantId },
+        //     where: { merchantId }, // Because merchantId is @unique
         //     create: { name, address, latitude, longitude, phone, description, merchantId },
         //     update: { name, address, latitude, longitude, phone, description },
         // });
@@ -76,7 +76,7 @@ export const createOrUpdateStore = async (req: Request, res: Response) => {
 
         res.json({
             success: true,
-            message: 'Store settings saved successfully',
+            message: 'Store settings saved (ONE store per merchant)',
             store: newStore
         });
     } catch (error) {

@@ -30,7 +30,7 @@ model User {
   lastLoginAt DateTime?
 
   // Relations
-  stores Store[] // Only for merchants
+  store Store? // ONE store per merchant (one-to-one)
   orders Order[]
 
   // Timestamps
@@ -60,7 +60,7 @@ model Store {
   phone       String?
 
   // Relations
-  merchantId String
+  merchantId String  @unique // ONE merchant per store
   merchant   User    @relation(fields: [merchantId], references: [id], onDelete: Cascade)
   offers     Offer[]
 

@@ -190,11 +190,12 @@ const StoreSettings = () => {
                 {/* Info */}
                 <div className="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-4">
                     <h4 className="font-semibold text-sm text-blue-900 dark:text-blue-200 mb-2">
-                        📌 Why we need your location
+                        ℹ️ One Store Per Vendor
                     </h4>
                     <ul className="text-xs text-blue-700 dark:text-blue-300 space-y-1">
+                        <li>• Each vendor can have only ONE store location</li>
                         <li>• Customers can find you on the map</li>
-                        <li>• Helps with nearby store recommendations</li>
+                        <li>• Updating these settings modifies your store info</li>
                         <li>• All data is secure and private</li>
                     </ul>
                 </div>
