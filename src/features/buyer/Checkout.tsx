@@ -1,7 +1,7 @@
 /**
  * Checkout Page
  * 
- * Order confirmation and QR code generation
+ * Order confirmation and QR code generation (Test Mode)
  */
 
 import { useState, useEffect } from 'react';
@@ -20,7 +20,6 @@ const Checkout = () => {
     const [orderId, setOrderId] = useState<string | null>(null);
     const [qrCode, setQrCode] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
-    const [paymentMethod, setPaymentMethod] = useState<'mbank' | 'optima' | 'odengi'>('mbank');
 
     const totalPrice = getTotalPrice();
 
@@ -35,7 +34,6 @@ const Checkout = () => {
         hapticFeedback('success');
 
         try {
-            // Create order for first item (for MVP, one order per item)
             const firstItem = items[0];
             const userId = user?.id?.toString() || 'dev-user-' + Date.now();
 
@@ -60,6 +58,15 @@ const Checkout = () => {
         return (
             <div className="min-h-screen bg-tg-bg flex items-center justify-center px-4">
                 <div className="w-full max-w-md">
+                    {/* Back button */}
+                    <button
+                        onClick={() => navigate('/')}
+                        className="mb-4 text-tg-button flex items-center gap-2"
+                    >
+                        <span className="text-2xl">←</span>
+                        <span>Back to Home</span>
+                    </button>
+
                     <div className="text-center mb-6">
                         <div className="text-6xl mb-4">✅</div>
                         <h2 className="text-2xl font-bold text-tg-text mb-2">Order Confirmed!</h2>
@@ -81,8 +88,14 @@ const Checkout = () => {
                         <div className="text-sm text-tg-hint mb-2">Order ID</div>
                         <div className="font-mono text-lg text-tg-text mb-4">{orderId}</div>
 
-                        <div className="text-sm text-tg-hint mb-2">Total Paid</div>
+                        <div className="text-sm text-tg-hint mb-2">Total</div>
                         <div className="text-2xl font-bold text-tg-button">{totalPrice} KGS</div>
+
+                        <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                            <p className="text-xs text-blue-700 dark:text-blue-300">
+                                💡 <strong>Test Mode:</strong> Payment happens at pickup
+                            </p>
+                        </div>
                     </div>
 
                     {/* Actions */}
@@ -91,17 +104,17 @@ const Checkout = () => {
                             View My Orders
                         </Button>
                         <Button fullWidth variant="secondary" onClick={() => navigate('/')}>
-                            Back to Home
+                            Continue Shopping
                         </Button>
                     </div>
 
                     {/* Instructions */}
-                    <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl">
+                    <div className="mt-6 p-4 bg-tg-secondary rounded-xl">
                         <h4 className="font-semibold text-tg-text mb-2">📱 Pickup Instructions</h4>
                         <ol className="text-sm text-tg-hint space-y-1 list-decimal list-inside">
                             <li>Arrive during the pickup time window</li>
                             <li>Show this QR code to the staff</li>
-                            <li>They will scan and prepare your surprise bag</li>
+                            <li>Pay and collect your surprise bag</li>
                             <li>Enjoy your meal!</li>
                         </ol>
                     </div>
@@ -113,65 +126,40 @@ const Checkout = () => {
     // Checkout Confirmation
     return (
         <div className="min-h-screen bg-tg-bg pb-24">
-            <div className="px-4 py-6">
-                <h1 className="text-2xl font-bold text-tg-text mb-6">Confirm Your Order</h1>
+            {/* Header with back button */}
+            <div className="bg-tg-secondary px-4 py-4 sticky top-0 z-10 shadow-sm flex items-center gap-3">
+                <button
+                    onClick={() => navigate('/cart')}
+                    className="text-tg-button text-2xl"
+                >
+                    ←
+                </button>
+                <h1 className="text-xl font-bold text-tg-text">Confirm Your Order</h1>
+            </div>
 
+            <div className="px-4 py-6">
                 {/* Order Items */}
                 <div className="space-y-3 mb-6">
                     {items.map((item) => (
                         <div key={item.offerId} className="bg-tg-secondary rounded-xl p-4">
-                            <div className="flex justify-between items-start mb-2">
+                            <div className="flex gap-3">
+                                {item.image && (
+                                    <img
+                                        src={item.image}
+                                        alt={item.storeName}
+                                        className="w-20 h-20 rounded-lg object-cover"
+                                    />
+                                )}
                                 <div className="flex-1">
                                     <h3 className="font-semibold text-tg-text">{item.storeName}</h3>
                                     <p className="text-sm text-tg-hint">Qty: {item.quantity}</p>
-                                </div>
-                                <div className="text-right">
-                                    <div className="font-bold text-tg-button">{item.discountedPrice * item.quantity} KGS</div>
+                                    <p className="text-lg font-bold text-tg-button mt-1">
+                                        {item.discountedPrice * item.quantity} KGS
+                                    </p>
                                 </div>
                             </div>
                         </div>
                     ))}
-                </div>
-
-                {/* Payment Method */}
-                <div className="mb-6">
-                    <h3 className="font-semibold text-tg-text mb-3">Choose Payment App</h3>
-                    <div className="grid grid-cols-2 gap-3">
-                        <button
-                            onClick={() => setPaymentMethod('mbank')}
-                            className={`p-4 rounded-xl border-2 flex flex-col items-center justify-center gap-2 transition-all ${paymentMethod === 'mbank'
-                                ? 'border-blue-500 bg-blue-500/10'
-                                : 'border-tg-hint/10 bg-tg-secondary'
-                                }`}
-                        >
-                            <span className="text-2xl">🏦</span>
-                            <span className="font-bold text-sm text-tg-text">MBank</span>
-                        </button>
-
-                        <button
-                            onClick={() => setPaymentMethod('optima')}
-                            className={`p-4 rounded-xl border-2 flex flex-col items-center justify-center gap-2 transition-all ${paymentMethod === 'optima'
-                                ? 'border-red-500 bg-red-500/10'
-                                : 'border-tg-hint/10 bg-tg-secondary'
-                                }`}
-                        >
-                            <span className="text-2xl">💳</span>
-                            <span className="font-bold text-sm text-tg-text">Optima24</span>
-                        </button>
-
-                        <button
-                            onClick={() => setPaymentMethod('odengi')}
-                            className={`p-4 rounded-xl border-2 flex flex-col items-center justify-center gap-2 transition-all ${paymentMethod === 'odengi'
-                                ? 'border-purple-500 bg-purple-500/10'
-                                : 'border-tg-hint/10 bg-tg-secondary'
-                                }`}
-                        >
-                            <span className="text-2xl">📱</span>
-                            <span className="font-bold text-sm text-tg-text">O!Dengi</span>
-                        </button>
-
-
-                    </div>
                 </div>
 
                 {/* Summary */}
@@ -191,9 +179,24 @@ const Checkout = () => {
                     </div>
                 </div>
 
+                {/* Test Mode Notice */}
+                <div className="bg-yellow-50 dark:bg-yellow-900/20 border-2 border-yellow-500 rounded-xl p-4 mb-6">
+                    <div className="flex items-start gap-3">
+                        <span className="text-2xl">🧪</span>
+                        <div>
+                            <h4 className="font-bold text-yellow-900 dark:text-yellow-200 mb-1">
+                                Test Mode Active
+                            </h4>
+                            <p className="text-sm text-yellow-700 dark:text-yellow-300">
+                                Click "Place Order" to get your QR code. Payment happens at pickup - no prepayment needed for now.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
                 {/* Terms */}
                 <p className="text-xs text-tg-hint text-center mb-6">
-                    By placing this order, you agree to pick up during the specified time window and pay on pickup.
+                    By placing this order, you agree to pick up during the specified time window.
                 </p>
             </div>
 
@@ -205,7 +208,7 @@ const Checkout = () => {
                     onClick={handlePlaceOrder}
                     loading={loading}
                 >
-                    Place Order
+                    Place Order & Get QR Code
                 </Button>
             </div>
         </div>
