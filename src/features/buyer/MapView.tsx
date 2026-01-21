@@ -10,6 +10,7 @@ import { useNavigate } from 'react-router-dom';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { storesApi, Store } from '../../api/stores';
+import { useTelegram } from '../../hooks/useTelegram';
 
 // Fix for default marker icons in Leaflet
 import icon from 'leaflet/dist/images/marker-icon.png';
@@ -26,6 +27,7 @@ L.Marker.prototype.options.icon = DefaultIcon;
 
 const MapView = () => {
     const navigate = useNavigate();
+    const { hapticFeedback } = useTelegram();
     const [stores, setStores] = useState<Store[]>([]);
     const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
     const [loading, setLoading] = useState(true);
@@ -115,10 +117,13 @@ const MapView = () => {
                                     <p className="text-xs text-gray-500 mb-2">📞 {store.phone}</p>
                                 )}
                                 <button
-                                    onClick={() => navigate('/')}
-                                    className="bg-blue-500 text-white px-3 py-1 rounded-lg text-xs font-medium w-full"
+                                    onClick={() => {
+                                        hapticFeedback('light');
+                                        navigate('/');
+                                    }}
+                                    className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded-lg text-sm font-medium w-full transition-colors"
                                 >
-                                    View Offers
+                                    🛍️ View Offers
                                 </button>
                             </div>
                         </Popup>
