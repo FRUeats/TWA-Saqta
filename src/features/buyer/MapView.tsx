@@ -110,18 +110,37 @@ const MapView = () => {
                 {stores.map((store) => (
                     <Marker key={store.id} position={[store.latitude, store.longitude]}>
                         <Popup>
-                            <div className="p-2 min-w-[200px]">
-                                <h3 className="font-bold text-base mb-1">{store.name}</h3>
-                                <p className="text-sm text-gray-600 mb-2">{store.address}</p>
+                            <div style={{ padding: '8px', minWidth: '200px' }}>
+                                <h3 style={{ fontWeight: 'bold', fontSize: '16px', marginBottom: '4px' }}>
+                                    {store.name}
+                                </h3>
+                                <p style={{ fontSize: '14px', color: '#666', marginBottom: '8px' }}>
+                                    {store.address}
+                                </p>
                                 {store.phone && (
-                                    <p className="text-xs text-gray-500 mb-2">📞 {store.phone}</p>
+                                    <p style={{ fontSize: '12px', color: '#888', marginBottom: '8px' }}>
+                                        📞 {store.phone}
+                                    </p>
                                 )}
                                 <button
                                     onClick={() => {
                                         hapticFeedback('light');
                                         navigate('/');
                                     }}
-                                    className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded-lg text-sm font-medium w-full transition-colors"
+                                    style={{
+                                        backgroundColor: '#3b82f6',
+                                        color: 'white',
+                                        padding: '8px 12px',
+                                        borderRadius: '8px',
+                                        fontSize: '14px',
+                                        fontWeight: '600',
+                                        width: '100%',
+                                        border: 'none',
+                                        cursor: 'pointer',
+                                        transition: 'background-color 0.2s'
+                                    }}
+                                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#2563eb'}
+                                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#3b82f6'}
                                 >
                                     🛍️ View Offers
                                 </button>
