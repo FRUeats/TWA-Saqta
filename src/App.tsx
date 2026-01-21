@@ -28,6 +28,7 @@ import Profile from './features/shared/Profile';
 import Auth from './features/shared/Auth';
 import VendorRegistration from './features/shared/VendorRegistration';
 import VendorPending from './features/shared/VendorPending';
+import Debug from './features/shared/Debug';
 
 // Components
 import Layout from './components/Layout';
@@ -202,6 +203,16 @@ function App() {
                                 <Profile />
                             </Layout>
                         </ProtectedRoute>
+                    }
+                />
+
+                {/* Debug Page (for testing) */}
+                <Route
+                    path="/debug"
+                    element={
+                        <Layout>
+                            <Debug />
+                        </Layout>
                     }
                 />
 
