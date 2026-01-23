@@ -2,7 +2,7 @@
  * Validation schemas using Zod
  */
 
-import { z } from 'zod';
+import { z, ZodIssue } from 'zod';
 
 // Store validation
 export const storeSchema = z.object({
@@ -54,7 +54,7 @@ export function validate<T>(schema: z.ZodSchema<T>) {
             if (error instanceof z.ZodError) {
                 return res.status(400).json({
                     error: 'Validation failed',
-                    details: error.errors.map(e => ({
+                    details: error.issues.map((e: ZodIssue) => ({
                         path: e.path.join('.'),
                         message: e.message,
                     })),

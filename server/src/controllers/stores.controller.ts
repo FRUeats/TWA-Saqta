@@ -70,7 +70,7 @@ export const createOrUpdateStore = async (req: Request, res: Response) => {
         if (!validationResult.success) {
             return res.status(400).json({
                 error: 'Validation failed',
-                details: validationResult.error.errors.map(e => ({
+                details: validationResult.error.issues.map((e: any) => ({
                     path: e.path.join('.'),
                     message: e.message,
                 })),

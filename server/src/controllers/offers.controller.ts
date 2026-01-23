@@ -84,7 +84,7 @@ export const createOffer = async (req: Request, res: Response) => {
         if (!validationResult.success) {
             return res.status(400).json({
                 error: 'Validation failed',
-                details: validationResult.error.errors.map(e => ({
+                details: validationResult.error.issues.map((e: any) => ({
                     path: e.path.join('.'),
                     message: e.message,
                 })),
@@ -105,9 +105,9 @@ export const createOffer = async (req: Request, res: Response) => {
         const offer = await prisma.offer.create({
             data: {
                 storeId,
-                originalPrice: parseFloat(originalPrice),
-                discountedPrice: parseFloat(discountedPrice),
-                quantity: parseInt(quantity),
+                originalPrice,
+                discountedPrice,
+                quantity,
                 pickupStart: new Date(pickupStart),
                 pickupEnd: new Date(pickupEnd),
                 description,
