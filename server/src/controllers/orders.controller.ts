@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
 import crypto from 'crypto';
 import { mockOffers, mockOrders, addMockOrder, updateOfferQuantity, generateQRCode } from '../mock/mockData.js';
+import { orderSchema } from '../utils/validation.js';
 
 const prisma = new PrismaClient();
 
@@ -11,11 +12,20 @@ let dynamicMockOrders: any[] = [...mockOrders];
 // POST /api/orders - Create new order
 export const createOrder = async (req: Request, res: Response) => {
     try {
-        const { userId, offerId, notes } = req.body;
-
-        if (!userId || !offerId) {
-            return res.status(400).json({ error: 'Missing required fields' });
+        // Validate input using Zod
+        const validationResult = orderSchema.safeParse(req.body);
+        if (!validationResult.success) {
+            return res.status(400).json({
+                error: 'Validation failed',
+                details: validationResult.error.errors.map(e => ({
+                    path: e.path.join('.'),
+                    message: e.message,
+                })),
+            });
         }
+
+        const { offerId, notes } = validationResult.data;
+        const userId = req.body.userId; // userId might come from auth middleware
 
         // Check if offer is still available
         const offer = await prisma.offer.findUnique({

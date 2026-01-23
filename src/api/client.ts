@@ -10,6 +10,22 @@ interface ApiOptions {
     headers?: Record<string, string>;
 }
 
+// Custom error class to include response details
+class ApiError extends Error {
+    response?: {
+        status: number;
+        data: any;
+    };
+
+    constructor(message: string, status?: number, data?: any) {
+        super(message);
+        this.name = 'ApiError';
+        if (status !== undefined) {
+            this.response = { status, data };
+        }
+    }
+}
+
 async function apiClient(endpoint: string, options: ApiOptions = {}) {
     const { method = 'GET', body, headers = {} } = options;
 
@@ -39,7 +55,11 @@ async function apiClient(endpoint: string, options: ApiOptions = {}) {
     }
 
     if (!response.ok) {
-        throw new Error(data.error || 'Request failed');
+        throw new ApiError(
+            data.error || 'Request failed',
+            response.status,
+            data
+        );
     }
 
     return data;

@@ -9,6 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTelegram } from '../../hooks/useTelegram';
 import { offersApi } from '../../api/offers';
 import OfferCard from '../../components/OfferCard';
+import BuyerOnboarding from '../shared/BuyerOnboarding';
 
 interface Offer {
     id: string;
@@ -58,11 +59,22 @@ const Home = () => {
     const [loading, setLoading] = useState(true);
     const [filter, setFilter] = useState<'all' | 'nearby' | 'lowPrice'>('all');
     const [error, setError] = useState<string | null>(null);
+    const [showOnboarding, setShowOnboarding] = useState(false);
+
+    // Check if onboarding is needed
+    useEffect(() => {
+        const onboardingCompleted = localStorage.getItem('buyer-onboarding-completed');
+        if (!onboardingCompleted) {
+            setShowOnboarding(true);
+        }
+    }, []);
 
     // Fetch offers from API
     useEffect(() => {
-        fetchOffers();
-    }, [filter]);
+        if (!showOnboarding) {
+            fetchOffers();
+        }
+    }, [filter, showOnboarding]);
 
     const fetchOffers = async () => {
         setLoading(true);
@@ -82,6 +94,11 @@ const Home = () => {
         hapticFeedback('light');
         setFilter(newFilter);
     };
+
+    // Show onboarding if needed
+    if (showOnboarding) {
+        return <BuyerOnboarding />;
+    }
 
     return (
         <div className="min-h-screen bg-tg-bg pb-20">

@@ -20,6 +20,10 @@ export const storesApi = {
         return apiClient(`/api/stores/${id}`, { method: 'GET' });
     },
 
+    getVendorStore: async (merchantId: string): Promise<Store> => {
+        return apiClient(`/api/stores/vendor/${merchantId}`, { method: 'GET' });
+    },
+
     create: async (data: Omit<Store, 'id'>): Promise<{ success: boolean; message: string; store: Store }> => {
         return apiClient('/api/stores', {
             method: 'POST',

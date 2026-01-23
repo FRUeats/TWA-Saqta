@@ -28,6 +28,7 @@ import Profile from './features/shared/Profile';
 import Auth from './features/shared/Auth';
 import VendorRegistration from './features/shared/VendorRegistration';
 import VendorPending from './features/shared/VendorPending';
+import BuyerOnboarding from './features/shared/BuyerOnboarding';
 import Debug from './features/shared/Debug';
 
 // Components
@@ -59,6 +60,9 @@ function App() {
             <Routes>
                 {/* Authentication */}
                 <Route path="/auth" element={<Auth />} />
+
+                {/* Buyer Onboarding */}
+                <Route path="/onboarding" element={<BuyerOnboarding />} />
 
                 {/* Vendor Routes */}
                 <Route path="/vendor/register" element={<VendorRegistration />} />

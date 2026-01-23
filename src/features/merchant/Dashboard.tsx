@@ -7,12 +7,16 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTelegram } from '../../hooks/useTelegram';
+import { useAuthStore } from '../../store/authStore';
 import { offersApi } from '../../api/offers';
+import { storesApi } from '../../api/stores';
+import VendorOnboarding from './VendorOnboarding';
 
 
 const MerchantDashboard = () => {
     const navigate = useNavigate();
     const { user, hapticFeedback } = useTelegram();
+    const { user: authUser } = useAuthStore();
     const [offers, setOffers] = useState<any[]>([]);
     const [stats, setStats] = useState({
         activeOffers: 0,
@@ -20,10 +24,41 @@ const MerchantDashboard = () => {
         todayRevenue: 0,
     });
     const [loading, setLoading] = useState(true);
+    const [hasStore, setHasStore] = useState<boolean | null>(null); // null = checking
 
     useEffect(() => {
-        fetchData();
-    }, []);
+        checkStoreAndFetchData();
+    }, [authUser]);
+
+    const checkStoreAndFetchData = async () => {
+        setLoading(true);
+        try {
+            // Check if THIS vendor has a store configured
+            if (authUser?.id) {
+                const store = await storesApi.getVendorStore(authUser.id);
+                setHasStore(!!store);
+
+                if (store) {
+                    // Only fetch offers if store exists
+                    await fetchData();
+                }
+            } else {
+                // No auth user - treat as no store
+                setHasStore(false);
+            }
+        } catch (error: any) {
+            console.error('Failed to check store:', error);
+            // 404 means no store found for this vendor
+            if (error.response?.status === 404) {
+                setHasStore(false);
+            } else {
+                // Other errors - also treat as no store
+                setHasStore(false);
+            }
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const fetchData = async () => {
         setLoading(true);
@@ -69,6 +104,11 @@ const MerchantDashboard = () => {
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-tg-button"></div>
             </div>
         );
+    }
+
+    // Show onboarding if vendor has no store
+    if (hasStore === false) {
+        return <VendorOnboarding />;
     }
 
     return (

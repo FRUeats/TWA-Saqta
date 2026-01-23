@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
 import { mockOffers, mockStores } from '../mock/mockData.js';
+import { offerSchema } from '../utils/validation.js';
 
 const prisma = new PrismaClient();
 const USE_MOCK = process.env.USE_MOCK === 'true' || process.env.NODE_ENV === 'development';
@@ -74,6 +75,18 @@ export const getOfferById = async (req: Request, res: Response) => {
 // POST /api/offers - Create new offer (merchant only)
 export const createOffer = async (req: Request, res: Response) => {
     try {
+        // Validate input using Zod
+        const validationResult = offerSchema.safeParse(req.body);
+        if (!validationResult.success) {
+            return res.status(400).json({
+                error: 'Validation failed',
+                details: validationResult.error.errors.map(e => ({
+                    path: e.path.join('.'),
+                    message: e.message,
+                })),
+            });
+        }
+
         const {
             storeId,
             originalPrice,
@@ -83,12 +96,7 @@ export const createOffer = async (req: Request, res: Response) => {
             pickupEnd,
             description,
             image,
-        } = req.body;
-
-        // Validation
-        if (!storeId || !originalPrice || !discountedPrice || !quantity || !pickupStart || !pickupEnd) {
-            return res.status(400).json({ error: 'Missing required fields' });
-        }
+        } = validationResult.data;
 
         const offer = await prisma.offer.create({
             data: {
