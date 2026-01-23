@@ -52,7 +52,6 @@ const OfferDetail = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const { showBackButton, hideBackButton, hideMainButton, hapticFeedback } = useTelegram();
-    const { addItem } = useCartStore();
     const { language } = useLanguageStore();
     const t = (key: string) => getTranslation(language, key);
 

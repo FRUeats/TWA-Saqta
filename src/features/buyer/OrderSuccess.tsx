@@ -14,7 +14,6 @@ import { getTranslation } from '../../utils/i18n';
 import Button from '../../components/Button';
 
 const OrderSuccess = () => {
-    const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const location = useLocation();
     const { hapticFeedback } = useTelegram();

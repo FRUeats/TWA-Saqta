@@ -5,7 +5,7 @@
  * Includes language selection and permissions request
  */
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTelegram } from '../../hooks/useTelegram';
 import { useLanguageStore } from '../../store/languageStore';

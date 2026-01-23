@@ -67,7 +67,8 @@ const Onboarding = () => {
                     <div className="flex gap-4">
                         <div className="text-4xl">1️⃣</div>
                         <div>
-                            <h4 className="font-semibold text-tg-text mb-1">{t.step1}</h4>
+                            <h4 className="font-semibold text-tg-text mb-1">{t.step1Title}</h4>
+                            <p className="text-sm text-tg-hint mb-2">{t.step1Description}</p>
                             <div className="w-full h-32 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-xl flex items-center justify-center">
                                 <span className="text-5xl">🛍️</span>
                             </div>
@@ -77,7 +78,8 @@ const Onboarding = () => {
                     <div className="flex gap-4">
                         <div className="text-4xl">2️⃣</div>
                         <div>
-                            <h4 className="font-semibold text-tg-text mb-1">{t.step2}</h4>
+                            <h4 className="font-semibold text-tg-text mb-1">{t.step2Title}</h4>
+                            <p className="text-sm text-tg-hint mb-2">{t.step2Description}</p>
                             <div className="w-full h-32 bg-gradient-to-br from-green-500/20 to-blue-500/20 rounded-xl flex items-center justify-center">
                                 <span className="text-5xl">💰</span>
                             </div>
@@ -87,7 +89,8 @@ const Onboarding = () => {
                     <div className="flex gap-4">
                         <div className="text-4xl">3️⃣</div>
                         <div>
-                            <h4 className="font-semibold text-tg-text mb-1">{t.step3}</h4>
+                            <h4 className="font-semibold text-tg-text mb-1">{t.step3Title}</h4>
+                            <p className="text-sm text-tg-hint mb-2">{t.step3Description}</p>
                             <div className="w-full h-32 bg-gradient-to-br from-yellow-500/20 to-pink-500/20 rounded-xl flex items-center justify-center">
                                 <span className="text-5xl">🎉</span>
                             </div>
