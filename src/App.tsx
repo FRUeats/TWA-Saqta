@@ -13,6 +13,8 @@ import Home from './features/buyer/Home';
 import OfferDetail from './features/buyer/OfferDetail';
 import Cart from './features/buyer/Cart';
 import Checkout from './features/buyer/Checkout';
+import Payment from './features/buyer/Payment';
+import OrderSuccess from './features/buyer/OrderSuccess';
 import MapView from './features/buyer/MapView';
 import OrderHistory from './features/buyer/OrderHistory';
 
@@ -115,6 +117,28 @@ function App() {
                         <ProtectedRoute>
                             <Layout role="buyer">
                                 <Checkout />
+                            </Layout>
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/payment/:id"
+                    element={
+                        <ProtectedRoute>
+                            <Layout role="buyer">
+                                <Payment />
+                            </Layout>
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/order-success/:id"
+                    element={
+                        <ProtectedRoute>
+                            <Layout role="buyer">
+                                <OrderSuccess />
                             </Layout>
                         </ProtectedRoute>
                     }

@@ -56,8 +56,10 @@ const Home = () => {
     const navigate = useNavigate();
     const { user, hapticFeedback } = useTelegram();
     const [offers, setOffers] = useState<Offer[]>([]);
+    const [filteredOffers, setFilteredOffers] = useState<Offer[]>([]);
     const [loading, setLoading] = useState(true);
     const [filter, setFilter] = useState<'all' | 'nearby' | 'lowPrice'>('all');
+    const [searchQuery, setSearchQuery] = useState('');
     const [error, setError] = useState<string | null>(null);
     const [showOnboarding, setShowOnboarding] = useState(false);
 
@@ -82,6 +84,7 @@ const Home = () => {
         try {
             const data = await offersApi.getAll();
             setOffers(data);
+            setFilteredOffers(data);
         } catch (error: any) {
             console.error('Failed to fetch offers:', error);
             setError(error.message || 'Failed to load offers');
@@ -89,6 +92,32 @@ const Home = () => {
             setLoading(false);
         }
     };
+
+    // Filter and search offers
+    useEffect(() => {
+        let filtered = [...offers];
+
+        // Apply search filter
+        if (searchQuery.trim()) {
+            const query = searchQuery.toLowerCase();
+            filtered = filtered.filter(
+                (offer) =>
+                    offer.store.name.toLowerCase().includes(query) ||
+                    offer.store.address.toLowerCase().includes(query) ||
+                    offer.description?.toLowerCase().includes(query)
+            );
+        }
+
+        // Apply category filter
+        if (filter === 'lowPrice') {
+            filtered = filtered.sort((a, b) => a.discountedPrice - b.discountedPrice);
+        } else if (filter === 'nearby') {
+            // For now, just show all (can add location-based filtering later)
+            // filtered = filtered; // Keep as is
+        }
+
+        setFilteredOffers(filtered);
+    }, [offers, searchQuery, filter]);
 
     const handleFilterChange = (newFilter: typeof filter) => {
         hapticFeedback('light');
@@ -165,6 +194,48 @@ const Home = () => {
                         </div>
                     </div>
 
+                    {/* Search Bar */}
+                    <div className="mb-4">
+                        <div className="relative">
+                            <input
+                                type="text"
+                                placeholder="Search stores, addresses..."
+                                value={searchQuery}
+                                onChange={(e) => {
+                                    setSearchQuery(e.target.value);
+                                    hapticFeedback('light');
+                                }}
+                                className="w-full bg-tg-bg border border-tg-hint/20 rounded-xl px-4 py-3 pl-10 text-tg-text placeholder-tg-hint focus:outline-none focus:border-tg-button focus:ring-2 focus:ring-tg-button/20"
+                            />
+                            <svg
+                                className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-tg-hint"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                                />
+                            </svg>
+                            {searchQuery && (
+                                <button
+                                    onClick={() => {
+                                        setSearchQuery('');
+                                        hapticFeedback('light');
+                                    }}
+                                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-tg-hint hover:text-tg-text"
+                                >
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                            )}
+                        </div>
+                    </div>
+
                     {/* Filter Pills */}
                     <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
                         <FilterPill
@@ -220,12 +291,29 @@ const Home = () => {
                             </div>
                         ))}
                     </div>
-                ) : offers.length > 0 ? (
+                ) : filteredOffers.length > 0 ? (
                     // Offers Grid
                     <div className="grid grid-cols-1 gap-4">
-                        {offers.map((offer) => (
+                        {filteredOffers.map((offer) => (
                             <OfferCard key={offer.id} offer={offer} />
                         ))}
+                    </div>
+                ) : searchQuery ? (
+                    // No Search Results
+                    <div className="text-center py-12">
+                        <div className="text-6xl mb-4">🔍</div>
+                        <h3 className="text-xl font-semibold text-tg-text mb-2">
+                            No results found
+                        </h3>
+                        <p className="text-tg-hint mb-4">
+                            Try a different search term
+                        </p>
+                        <button
+                            onClick={() => setSearchQuery('')}
+                            className="text-tg-button underline"
+                        >
+                            Clear search
+                        </button>
                     </div>
                 ) : (
                     // Empty State

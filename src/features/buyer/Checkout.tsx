@@ -9,17 +9,24 @@ import { useNavigate } from 'react-router-dom';
 import { QRCodeSVG } from 'qrcode.react';
 import { useTelegram } from '../../hooks/useTelegram';
 import { useCartStore } from '../../store/cartStore';
+import { useLanguageStore } from '../../store/languageStore';
+import { getTranslation } from '../../utils/i18n';
 import { ordersApi } from '../../api/orders';
 import Button from '../../components/Button';
+
+type PaymentMethod = 'cash' | 'card' | 'mobile' | null;
 
 const Checkout = () => {
     const navigate = useNavigate();
     const { user, hapticFeedback } = useTelegram();
     const { items, getTotalPrice, clearCart } = useCartStore();
+    const { language } = useLanguageStore();
+    const t = (key: string) => getTranslation(language, key);
 
     const [orderId, setOrderId] = useState<string | null>(null);
     const [qrCode, setQrCode] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
+    const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>(null);
 
     const totalPrice = getTotalPrice();
 
@@ -30,6 +37,12 @@ const Checkout = () => {
     }, [items, orderId]);
 
     const handlePlaceOrder = async () => {
+        if (!paymentMethod) {
+            hapticFeedback('error');
+            alert(t('checkout.selectPayment'));
+            return;
+        }
+
         setLoading(true);
         hapticFeedback('success');
 
@@ -162,6 +175,94 @@ const Checkout = () => {
                     ))}
                 </div>
 
+                {/* Payment Method Selection */}
+                <div className="bg-tg-secondary rounded-xl p-4 mb-6">
+                    <h3 className="font-semibold text-tg-text mb-4 flex items-center gap-2">
+                        <span>💳</span>
+                        {t('checkout.paymentMethod')}
+                    </h3>
+
+                    <div className="space-y-3">
+                        {/* Cash */}
+                        <button
+                            onClick={() => {
+                                setPaymentMethod('cash');
+                                hapticFeedback('light');
+                            }}
+                            className={`w-full p-4 rounded-xl border-2 transition-all text-left ${
+                                paymentMethod === 'cash'
+                                    ? 'border-tg-button bg-tg-button/10'
+                                    : 'border-tg-hint/20 bg-tg-bg hover:border-tg-button/50'
+                            }`}
+                        >
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-3">
+                                    <span className="text-2xl">💵</span>
+                                    <div>
+                                        <div className="font-semibold text-tg-text">{t('checkout.cash')}</div>
+                                        <div className="text-xs text-tg-hint">{t('checkout.paymentAtPickupDesc')}</div>
+                                    </div>
+                                </div>
+                                {paymentMethod === 'cash' && (
+                                    <span className="text-tg-button text-xl">✓</span>
+                                )}
+                            </div>
+                        </button>
+
+                        {/* Card */}
+                        <button
+                            onClick={() => {
+                                setPaymentMethod('card');
+                                hapticFeedback('light');
+                            }}
+                            className={`w-full p-4 rounded-xl border-2 transition-all text-left ${
+                                paymentMethod === 'card'
+                                    ? 'border-tg-button bg-tg-button/10'
+                                    : 'border-tg-hint/20 bg-tg-bg hover:border-tg-button/50'
+                            }`}
+                        >
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-3">
+                                    <span className="text-2xl">💳</span>
+                                    <div>
+                                        <div className="font-semibold text-tg-text">{t('checkout.card')}</div>
+                                        <div className="text-xs text-tg-hint">{t('checkout.paymentAtPickupDesc')}</div>
+                                    </div>
+                                </div>
+                                {paymentMethod === 'card' && (
+                                    <span className="text-tg-button text-xl">✓</span>
+                                )}
+                            </div>
+                        </button>
+
+                        {/* Mobile Payment */}
+                        <button
+                            onClick={() => {
+                                setPaymentMethod('mobile');
+                                hapticFeedback('light');
+                            }}
+                            className={`w-full p-4 rounded-xl border-2 transition-all text-left ${
+                                paymentMethod === 'mobile'
+                                    ? 'border-tg-button bg-tg-button/10'
+                                    : 'border-tg-hint/20 bg-tg-bg hover:border-tg-button/50'
+                            }`}
+                        >
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-3">
+                                    <span className="text-2xl">📱</span>
+                                    <div>
+                                        <div className="font-semibold text-tg-text">{t('checkout.mobilePayment')}</div>
+                                        <div className="text-xs text-tg-hint">{t('checkout.paymentAtPickupDesc')}</div>
+                                    </div>
+                                </div>
+                                {paymentMethod === 'mobile' && (
+                                    <span className="text-tg-button text-xl">✓</span>
+                                )}
+                            </div>
+                        </button>
+                    </div>
+                </div>
+
                 {/* Summary */}
                 <div className="bg-tg-secondary rounded-xl p-4 mb-6">
                     <div className="flex justify-between items-center mb-2">
@@ -207,8 +308,9 @@ const Checkout = () => {
                     size="lg"
                     onClick={handlePlaceOrder}
                     loading={loading}
+                    disabled={!paymentMethod}
                 >
-                    Place Order & Get QR Code
+                    {paymentMethod ? t('checkout.placeOrder') : t('checkout.selectPayment')}
                 </Button>
             </div>
         </div>

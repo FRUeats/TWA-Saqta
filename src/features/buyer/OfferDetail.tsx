@@ -7,10 +7,27 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTelegram } from '../../hooks/useTelegram';
-import { useCartStore } from '../../store/cartStore';
+import { useLanguageStore } from '../../store/languageStore';
+import { getTranslation } from '../../utils/i18n';
 import { offersApi } from '../../api/offers';
 import Button from '../../components/Button';
 import Badge from '../../components/Badge';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
+
+// Fix for default marker icons in Leaflet
+import icon from 'leaflet/dist/images/marker-icon.png';
+import iconShadow from 'leaflet/dist/images/marker-shadow.png';
+
+let DefaultIcon = L.icon({
+    iconUrl: icon,
+    shadowUrl: iconShadow,
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+});
+
+L.Marker.prototype.options.icon = DefaultIcon;
 
 interface Offer {
     id: string;
@@ -19,6 +36,8 @@ interface Offer {
         address: string;
         image?: string;
         phone?: string;
+        latitude?: number;
+        longitude?: number;
     };
     originalPrice: number;
     discountedPrice: number;
@@ -34,10 +53,11 @@ const OfferDetail = () => {
     const navigate = useNavigate();
     const { showBackButton, hideBackButton, hideMainButton, hapticFeedback } = useTelegram();
     const { addItem } = useCartStore();
+    const { language } = useLanguageStore();
+    const t = (key: string) => getTranslation(language, key);
 
     const [offer, setOffer] = useState<Offer | null>(null);
     const [loading, setLoading] = useState(true);
-    const [adding, setAdding] = useState(false);
 
     useEffect(() => {
         fetchOffer();
@@ -65,27 +85,12 @@ const OfferDetail = () => {
         }
     };
 
-    const handleAddToCart = () => {
+    const handleReserve = () => {
         if (!offer) return;
 
-        setAdding(true);
         hapticFeedback('success');
-
-        addItem({
-            offerId: offer.id,
-            storeName: offer.store.name,
-            originalPrice: offer.originalPrice,
-            discountedPrice: offer.discountedPrice,
-            quantity: 1,
-            pickupStart: offer.pickupStart,
-            pickupEnd: offer.pickupEnd,
-            image: offer.image,
-        });
-
-        setTimeout(() => {
-            setAdding(false);
-            navigate('/cart');
-        }, 500);
+        // Navigate directly to payment page with offer ID
+        navigate(`/payment/${offer.id}`);
     };
 
     const discountPercent = offer
@@ -154,12 +159,43 @@ const OfferDetail = () => {
                 <h1 className="text-2xl font-bold text-tg-text mb-2">{offer.store.name}</h1>
 
                 {/* Address */}
-                <div className="flex items-start gap-2 text-tg-hint mb-4">
-                    <svg className="w-5 h-5 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
-                    <span>{offer.store.address}</span>
+                <div className="mb-4">
+                    <div className="flex items-start gap-2 text-tg-hint mb-3">
+                        <svg className="w-5 h-5 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        <span>{offer.store.address}</span>
+                    </div>
+
+                    {/* Map */}
+                    {offer.store.latitude && offer.store.longitude && (
+                        <div className="rounded-2xl overflow-hidden border border-tg-hint/20 mb-4" style={{ height: '200px' }}>
+                            <MapContainer
+                                center={[offer.store.latitude, offer.store.longitude]}
+                                zoom={15}
+                                style={{ height: '100%', width: '100%' }}
+                                scrollWheelZoom={false}
+                            >
+                                <TileLayer
+                                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                                />
+                                <Marker position={[offer.store.latitude, offer.store.longitude]}>
+                                    <Popup>
+                                        <div style={{ padding: '8px', minWidth: '150px' }}>
+                                            <h3 style={{ fontWeight: 'bold', fontSize: '16px', marginBottom: '4px' }}>
+                                                {offer.store.name}
+                                            </h3>
+                                            <p style={{ fontSize: '14px', color: '#666' }}>
+                                                {offer.store.address}
+                                            </p>
+                                        </div>
+                                    </Popup>
+                                </Marker>
+                            </MapContainer>
+                        </div>
+                    )}
                 </div>
 
                 {/* Price */}
@@ -212,11 +248,10 @@ const OfferDetail = () => {
                 <Button
                     fullWidth
                     size="lg"
-                    onClick={handleAddToCart}
-                    loading={adding}
+                    onClick={handleReserve}
                     disabled={offer.quantity === 0}
                 >
-                    {offer.quantity === 0 ? 'Sold Out' : 'Add to Cart'}
+                    {offer.quantity === 0 ? t('offer.soldOut') : t('offer.reserve')}
                 </Button>
             </div>
         </div>
